@@ -51,21 +51,10 @@ print("Best RF params:", rf_grid.best_params_)
 rf_model = rf_grid.best_estimator_
 y_pred_rf = rf_model.predict(X_rf_test)
 
-
 # 앙상블(단순 평균)
 y_pred_ensemble = (y_pred_cat + y_pred_rf) / 2
 rmse_ensemble = np.sqrt(mean_squared_error(y_test, y_pred_ensemble))
 print(f'앙상블(RF+CatBoost) RMSE: {rmse_ensemble:.2f}')
-
-# 결과 저장 (테스트셋)
-results_df = pd.DataFrame({
-    'y_true': y_test.values,
-    'catboost_pred': y_pred_cat,
-    'rf_pred': y_pred_rf,
-    'ensemble_pred': y_pred_ensemble
-})
-results_df.to_csv('앙상블_테스트셋_예측결과.csv', index=False, encoding='utf-8-sig')
-print('테스트셋 예측결과가 앙상블_테스트셋_예측결과.csv로 저장되었습니다.')
 
 # --- 5-Fold 교차검증 (앙상블) ---
 kf = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -92,11 +81,4 @@ for train_idx, val_idx in kf.split(X):
     y_val_pred_ensemble = (y_val_pred_cb + y_val_pred_rf) / 2
     rmse_ens = np.sqrt(mean_squared_error(y_val, y_val_pred_ensemble))
     ensemble_rmse_list.append(rmse_ens)
-
-# 5-Fold CV 결과 출력 및 저장
-cv_mean = np.mean(ensemble_rmse_list)
-cv_std = np.std(ensemble_rmse_list)
-print(f'앙상블(RF+CatBoost) 5-Fold CV RMSE: {cv_mean:.2f} ± {cv_std:.2f}')
-with open('앙상블_5FoldCV_RMSE.txt', 'w', encoding='utf-8') as f:
-    f.write(f'앙상블(RF+CatBoost) 5-Fold CV RMSE: {cv_mean:.2f} ± {cv_std:.2f}\n')
-print('5-Fold CV RMSE 결과가 앙상블_5FoldCV_RMSE.txt로 저장되었습니다.')
+print(f'앙상블(RF+CatBoost) 5-Fold CV RMSE: {np.mean(ensemble_rmse_list):.2f} ± {np.std(ensemble_rmse_list):.2f}')
