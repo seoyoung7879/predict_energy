@@ -38,9 +38,9 @@ X_rf_train, X_rf_test = X_rf_train.align(X_rf_test, join='left', axis=1, fill_va
 
 # CatBoost 모델 초기화 시 cat_features 지정
 cat_model = CatBoostRegressor(
-    verbose=2, 
+    verbose=0, 
     random_state=42, 
-    task_type='GPU',
+    task_type='CPU',  # 튜닝은 CPU로!
     cat_features=cat_features
 )
 
@@ -54,14 +54,21 @@ cat_params = {
 # RandomizedSearchCV는 cat_features 없이 fit함
 cat_search = RandomizedSearchCV(
     cat_model, cat_params, n_iter=10, cv=3, 
-    scoring='neg_root_mean_squared_error', n_jobs=-1, verbose=2, random_state=42
+    scoring='neg_root_mean_squared_error', n_jobs=1, verbose=2, random_state=42  # n_jobs=1
 )
 
 cat_search.fit(X_train, y_train)
 
 print('Best CatBoost params:', cat_search.best_params_)
 
-cat_model_best = cat_search.best_estimator_
+# 최적 파라미터로 GPU 학습
+cat_model_best = CatBoostRegressor(
+    **cat_search.best_params_,
+    verbose=2,
+    random_state=42,
+    task_type='GPU',
+    cat_features=cat_features
+)
 
 # Pool 만들어서 실제 학습과 평가 (early stopping 포함)
 train_pool = Pool(X_train, y_train, cat_features=cat_features)
