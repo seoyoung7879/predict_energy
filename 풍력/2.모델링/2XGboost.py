@@ -39,15 +39,15 @@ rf_scores = cross_val_score(rf, X, y, cv=kf, scoring='neg_root_mean_squared_erro
 print(f'RandomForest 5-Fold CV RMSE: {-rf_scores.mean():.2f} ± {rf_scores.std():.2f}')
 
 
-# 2. XGBoost (GPU 사용)
+# 2. XGBoost (GPU 사용, 최신 권장 방식)
 from xgboost import XGBRegressor
-xgb = XGBRegressor(n_estimators=100, random_state=42, tree_method='gpu_hist', predictor='gpu_predictor')
+xgb = XGBRegressor(n_estimators=100, random_state=42, tree_method='hist', device='cuda')
 xgb.fit(X_train, y_train)
 y_pred_xgb = xgb.predict(X_test)
 rmse_xgb = np.sqrt(mean_squared_error(y_test, y_pred_xgb))
 print(f'XGBoost RMSE: {rmse_xgb:.2f}')
 xgb_scores = cross_val_score(
-    XGBRegressor(n_estimators=100, random_state=42, tree_method='gpu_hist', predictor='gpu_predictor'),
+    XGBRegressor(n_estimators=100, random_state=42, tree_method='hist', device='cuda'),
     X, y, cv=kf, scoring='neg_root_mean_squared_error')
 print(f'XGBoost 5-Fold CV RMSE: {-xgb_scores.mean():.2f} ± {xgb_scores.std():.2f}')
 
