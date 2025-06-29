@@ -1,0 +1,35 @@
+모델별 예측 성능 (RMSE 기준)
+
+CatBoost
+- Test RMSE: 424.26
+- 5-Fold CV RMSE: 425.78 ± 3.00
+
+RandomForest
+- Test RMSE: 425.80
+- 5-Fold CV RMSE: 420.67 ± 2.89
+
+앙상블 (CatBoost + RandomForest)
+- Test RMSE: 415.51
+- 5-Fold CV RMSE: 413.78 ± 2.16
+
+XGBoost (GPU)
+- Test RMSE: 456.15
+- 5-Fold CV RMSE: 440.25 ± 5.38
+
+LightGBM (GPU)
+- Test RMSE: 455.37
+- 5-Fold CV RMSE: 452.11 ± 3.04
+
+LinearRegression
+- Test RMSE: 584.38
+- 5-Fold CV RMSE: 578.25 ± 5.36
+
+최종 요약:  
+앙상블 모델이 테스트와 교차검증 모두에서 가장 낮은 RMSE를 보여 가장 우수한 성능을 나타냅니다.
+
+3-1
+지표	의미	해석 및 조치
+R² 0.767	전체 성능은 준수	꽤 잘 설명하고 있음, 모델 구조는 문제 없음
+MAE 217	평균 오차 크기	과하게 크진 않지만, 성능 개선 여지 있음
+MedianAE 120	오차의 중간값	일반적으로는 작음, 일부 샘플에서만 크게 오차 발생
+sMAPE 103%	상대적 오차의 비율 (100% 이상은 위험 신호)	실제 발전량이 0 또는 매우 작을 때 예측이 튐 → 전처리 또는 로그 변환 고려
